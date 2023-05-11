@@ -1,0 +1,9 @@
+{
+    "editor.formatOnSave": true,
+"debug.javascript.autoAttachFilter": "onlyWithFlag",
+"debug.javascript.autoAttachSmartPattern": [
+    "${workspaceFolder}/**",
+    "!**/node_modules/**",
+    "**/$KNOWN_TOOLS$/**"
+]
+}

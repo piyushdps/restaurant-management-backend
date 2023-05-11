@@ -1,20 +1,29 @@
-import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
-import tokenTypes from '../token/token.types';
+// @ts-ignore
+import { Strategy as JwtStrategy } from 'passport-jwt';
+import { Request } from 'express';
 import config from '../../config/config';
 import User from '../user/user.model';
-import { IPayload } from '../token/token.interfaces';
+import { tokenTypes } from '../token';
 
+const cookieExtractor = (req: Request) => {
+  let jwt = null;
+  if (req && req.cookies) {
+    jwt = req.cookies.jwt;
+  }
+  return jwt;
+};
 const jwtStrategy = new JwtStrategy(
   {
+    jwtFromRequest: cookieExtractor,
     secretOrKey: config.jwt.secret,
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   },
-  async (payload: IPayload, done) => {
+  async (payload, done) => {
     try {
       if (payload.type !== tokenTypes.ACCESS) {
         throw new Error('Invalid token type');
       }
       const user = await User.findById(payload.sub);
+
       if (!user) {
         return done(null, false);
       }

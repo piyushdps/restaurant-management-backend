@@ -1,5 +1,6 @@
 import httpStatus from 'http-status';
 import { Request, Response } from 'express';
+import config from '../../config/config';
 import catchAsync from '../utils/catchAsync';
 import { tokenService } from '../token';
 import { userService } from '../user';
@@ -15,7 +16,9 @@ export const register = catchAsync(async (req: Request, res: Response) => {
 export const login = catchAsync(async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const user = await authService.loginUserWithEmailAndPassword(email, password);
+
   const tokens = await tokenService.generateAuthTokens(user);
+  res.cookie('jwt', tokens.access.token, { maxAge: 999999, ...config.jwt.cookieOptions });
   res.send({ user, tokens });
 });
 
@@ -26,6 +29,7 @@ export const logout = catchAsync(async (req: Request, res: Response) => {
 
 export const refreshTokens = catchAsync(async (req: Request, res: Response) => {
   const userWithTokens = await authService.refreshAuth(req.body.refreshToken);
+  res.cookie('jwt', userWithTokens.tokens.access, { maxAge: 999999, ...config.jwt.cookieOptions });
   res.send({ ...userWithTokens });
 });
 
@@ -48,5 +52,5 @@ export const sendVerificationEmail = catchAsync(async (req: Request, res: Respon
 
 export const verifyEmail = catchAsync(async (req: Request, res: Response) => {
   await authService.verifyEmail(req.query['token']);
-  res.status(httpStatus.NO_CONTENT).send();
+  res.status(httpStatus.OK).send('Verified');
 });

@@ -1,5 +1,16 @@
 components:
   schemas:
+    Restaurant:
+      type: object
+      properties:
+        id:
+          type: string
+        contact:
+          type: number
+        name:
+          type: string
+        ownerId:
+          type: string
     User:
       type: object
       properties:

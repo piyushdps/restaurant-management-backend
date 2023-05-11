@@ -18,6 +18,7 @@ export const loginUserWithEmailAndPassword = async (email: string, password: str
   if (!user || !(await user.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
   }
+  // where is this user.id going? Are we supposed to access this anywhere
   return user;
 };
 
@@ -46,7 +47,6 @@ export const refreshAuth = async (refreshToken: string): Promise<IUserWithTokens
     if (!user) {
       throw new Error();
     }
-    await refreshTokenDoc.deleteOne();
     const tokens = await generateAuthTokens(user);
     return { user, tokens };
   } catch (error) {
@@ -84,7 +84,7 @@ export const verifyEmail = async (verifyEmailToken: any): Promise<IUserDoc | nul
     const verifyEmailTokenDoc = await verifyToken(verifyEmailToken, tokenTypes.VERIFY_EMAIL);
     const user = await getUserById(new mongoose.Types.ObjectId(verifyEmailTokenDoc.user));
     if (!user) {
-      throw new Error();
+      throw new ApiError(httpStatus.UNAUTHORIZED, 'Email verification failed');
     }
     await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
     const updatedUser = await updateUserById(user.id, { isEmailVerified: true });

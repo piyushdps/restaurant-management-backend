@@ -10,6 +10,10 @@ import { AccessAndRefreshTokens, ITokenDoc } from './token.interfaces';
 import { IUserDoc } from '../user/user.interfaces';
 import { userService } from '../user';
 
+export const invalidateAllAuthTokens = async (userId: string) => {
+  return Token.findOneAndUpdate({ user: userId, type: tokenTypes.REFRESH, blacklisted: false }, { blacklisted: true });
+};
+
 /**
  * Generate token
  * @param {mongoose.Types.ObjectId} userId
@@ -88,6 +92,7 @@ export const verifyToken = async (token: string, type: string): Promise<ITokenDo
  * @returns {Promise<AccessAndRefreshTokens>}
  */
 export const generateAuthTokens = async (user: IUserDoc): Promise<AccessAndRefreshTokens> => {
+  await invalidateAllAuthTokens(user.id);
   const accessTokenExpires = moment().add(config.jwt.accessExpirationMinutes, 'minutes');
   const accessToken = generateToken(user.id, accessTokenExpires, tokenTypes.ACCESS);
 
@@ -117,6 +122,8 @@ export const generateResetPasswordToken = async (email: string): Promise<string>
   if (!user) {
     throw new ApiError(httpStatus.NO_CONTENT, '');
   }
+  // invalidate all refresh tokens tokens
+  await Token.deleteMany({ user: user.id, type: tokenTypes.REFRESH });
   const expires = moment().add(config.jwt.resetPasswordExpirationMinutes, 'minutes');
   const resetPasswordToken = generateToken(user.id, expires, tokenTypes.RESET_PASSWORD);
   await saveToken(resetPasswordToken, user.id, expires, tokenTypes.RESET_PASSWORD);

@@ -50,7 +50,7 @@ const config = {
     cookieOptions: {
       httpOnly: true,
       secure: envVars.NODE_ENV === 'production',
-      signed: true,
+      signed: false,
     },
   },
   email: {
