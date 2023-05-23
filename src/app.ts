@@ -52,6 +52,15 @@ if (config.env === 'production') {
 }
 
 // v1 api routes
+app.get('/', (_, res) => {
+  return res.redirect('/healthcheck');
+});
+
+app.get('/healthcheck', (_, res) => {
+  return res.status(200).json({ msg: 'sab badhiya chal rha hai!!' });
+});
+
+// v1 api routes
 app.use('/v1', routes);
 
 // send back a 404 error for any unknown api request

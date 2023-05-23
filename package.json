@@ -36,7 +36,14 @@
     "docker:test": "docker-compose -f docker-compose.yml -f docker-compose.test.yml up",
     "prepare": "husky install",
     "release": "standard-version && git push --follow-tags origin master",
-    "commit": "git add -A && cz"
+    "commit": "git add -A && cz",
+    "swagger": "swagger-jsdoc -d swagger.json -c config.js"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "**.ts"
+    ],
+    "delay": 2500
   },
   "keywords": [
     "node",

@@ -1,20 +1,20 @@
 // @ts-ignore
-import { Strategy as JwtStrategy } from 'passport-jwt';
-import { Request } from 'express';
+import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
+// import { Request } from 'express';
 import config from '../../config/config';
 import User from '../user/user.model';
 import { tokenTypes } from '../token';
+// import { logger } from '../logger';
 
-const cookieExtractor = (req: Request) => {
-  let jwt = null;
-  if (req && req.cookies) {
-    jwt = req.cookies.jwt;
-  }
-  return jwt;
-};
+// const tokenExtract = (req: Request) => {
+//   logger.info(JSON.stringify(req.headers));
+//   return () => ExtractJwt.fromAuthHeaderAsBearerToken();
+// };
+
 const jwtStrategy = new JwtStrategy(
   {
-    jwtFromRequest: cookieExtractor,
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    // jwtFromRequest: tokenExtract as unknown as JwtFromRequestFunction,
     secretOrKey: config.jwt.secret,
   },
   async (payload, done) => {
