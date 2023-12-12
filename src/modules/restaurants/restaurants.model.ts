@@ -24,6 +24,14 @@ const restaurantsSchema = new mongoose.Schema<IRestaurantDoc, IRestaurantModel>(
       type: Number,
       required: false,
     },
+    logo: {
+      type: String,
+      required: false,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
     isActive: {
       type: Boolean,
       default: false,

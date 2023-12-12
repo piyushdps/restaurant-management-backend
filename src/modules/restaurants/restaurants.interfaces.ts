@@ -7,6 +7,8 @@ export interface IRestaurant {
   pinCode: number;
   isActive: boolean;
   ownerId: mongoose.Types.ObjectId;
+  logo: string;
+  address: string;
 }
 export interface IRestaurantDoc extends IRestaurant, Document {}
 

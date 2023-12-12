@@ -7,6 +7,16 @@ import pick from '../utils/pick';
 import { IOptions } from '../paginate/paginate';
 import * as userService from './user.service';
 
+export const getProfile = catchAsync(async (req: Request, res: Response) => {
+  if (typeof req.user?.id === 'string') {
+    const user = await userService.getUserById(new mongoose.Types.ObjectId(req.user.id));
+    if (!user) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, 'User not found');
+    }
+    res.send(user);
+  }
+});
+
 export const createUser = catchAsync(async (req: Request, res: Response) => {
   const user = await userService.createUser(req.body);
   res.status(httpStatus.CREATED).send(user);

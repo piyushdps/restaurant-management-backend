@@ -25,8 +25,17 @@ if (config.env !== 'test') {
 app.use(helmet());
 
 // enable cors
-app.use(cors());
-app.options('*', cors());
+const allowlist = ['http://localhost:9500'];
+
+const corsOptions = {
+  origin: (origin: any, callback: any) => {
+    if (allowlist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else callback(null, false);
+  },
+  credentials: true,
+};
+app.use(cors(corsOptions));
 
 app.use(cookieParser());
 // parse json request body
@@ -46,11 +55,6 @@ app.use(compression());
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
 
-// limit repeated failed requests to auth endpoints
-if (config.env === 'production') {
-  app.use('/v1/auth', authLimiter);
-}
-
 // v1 api routes
 app.get('/', (_, res) => {
   return res.redirect('/healthcheck');
@@ -59,6 +63,11 @@ app.get('/', (_, res) => {
 app.get('/healthcheck', (_, res) => {
   return res.status(200).json({ msg: 'sab badhiya chal rha hai!!' });
 });
+
+// limit repeated failed requests to auth endpoints
+if (config.env === 'production') {
+  app.use('/v1/auth', authLimiter);
+}
 
 // v1 api routes
 app.use('/v1', routes);

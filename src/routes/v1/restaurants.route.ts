@@ -11,7 +11,7 @@ const router: Router = express.Router();
 router
   .route('/')
   .post(auth('manageRestaurants'), validate(restaurantValidation.createRestaurant), restaurantController.addRestaurant)
-  .get(auth('getRestaurants'), validate(restaurantValidation.getRestaurants), restaurantController.getOwnedRestaurants);
+  .get(auth('getOwnRestaurants'), validate(restaurantValidation.getRestaurants), restaurantController.getOwnedRestaurants);
 
 router
   .route('/all')

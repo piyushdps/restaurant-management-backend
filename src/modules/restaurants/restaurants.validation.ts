@@ -6,6 +6,8 @@ const createRestaurantBody: Record<keyof NewCreatedRestaurant, any> = {
   name: Joi.string().required(),
   contact: Joi.number().less(9999999999).greater(6000000000),
   pinCode: Joi.number().required(),
+  logo: Joi.string(),
+  address: Joi.string().required(),
 };
 
 export const createRestaurant = {
@@ -38,6 +40,8 @@ export const updateRestaurant = {
       name: Joi.string(),
       contact: Joi.number().less(9999999999).greater(6000000000),
       pinCode: Joi.number(),
+      logo: Joi.string(),
+      address: Joi.string(),
     })
     .min(1),
 };
